@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('/static/img.jpg') no-repeat center center fixed;
+            background-size: cover;
+            text-align: center;
+            padding: 100px;
+            margin: 0;
+        }
+
+        h1 {
+            color: rgb(0, 170, 200);
+            font-size: 30px;
+            margin-bottom: 40px;
+        }
+
+        form {
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: rgb(6, 98, 155);
+            color: white;
+            border: 5px solid rgb(44, 203, 137);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .weather-card {
+            background-color: rgba(224, 109, 109, 0.8);
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(215, 115, 33, 0);
+            color: #333;
+            transition: 0.3s;
+        }
+
+        .weather-card:hover {
+            transform: scale(1.02);
+        }
+
+        .weather-card p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .emoji {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+        }
+
+        /* Map container */
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌦 Weather Forecast Dashboard</h1>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <form method="post">
+        <input type="text" name="city" placeholder="Enter city name" required>
+        <button type="submit">Get Weather</button>
+    </form>
+
+    {% if weather %}
+    <div class="weather-card">
+        <h2 class="emoji">📍 {{ weather.city }}</h2>
+        <p>🌡️ Temperature: {{ weather.temp }}°C</p>
+        <p>💧 Humidity: {{ weather.humidity }}%</p>
+        <p>🌬️ Wind Speed: {{ weather.wind_speed }} m/s</p>
+        <p>🌧️ Rain: {{ weather.rain }} mm</p>
+        <p>🌤️ Description: {{ weather.description }}</p>
+        <p>🕒 Local Time: {{ weather.local_time }}</p>
+    </div>
+
+    <!-- Map showing the city location -->
+    <div id="map"></div>
+
+    <script>
+        var map = L.map('map').setView([{{ weather.lat }}, {{ weather.lon }}], 10);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>',
+            maxZoom: 18
+        }).addTo(map);
+
+        L.marker([{{ weather.lat }}, {{ weather.lon }}]).addTo(map)
+            .bindPopup("{{ weather.city }}")
+            .openPopup();
+    </script>
+    {% endif %}
+</body>
+</html>
